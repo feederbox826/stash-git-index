@@ -118,7 +118,7 @@ export const type_map = [
  */
 export const last_commit_condition = (last_commit) => {
   const date = Date.parse(last_commit);
-  if (!date) return "is-light";
+  if (!date) return "is-link";
   const year = 1000 * 60 * 60 * 24 * 365;
   const now = Date.now();
   if (date.valueOf() > now - year) return "is-success";

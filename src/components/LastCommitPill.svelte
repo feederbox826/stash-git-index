@@ -12,9 +12,9 @@
 </script>
 
 {#await lookup(repo)}
-  <span class="tag is-rounded is-light">…</span>
+  <span>—</span>
 {:then text}
-  <span class="tag is-rounded {last_commit_condition(text)}">{text || "—"}</span>
+  <span class="tag {last_commit_condition(text)}">{text || "—"}</span>
 {:catch}
   —
 {/await}

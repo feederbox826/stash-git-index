@@ -14,46 +14,56 @@
   let { repo, removed, mirrored, discourse_id, gist }: Props = $props();
 </script>
 
-<span class="repo-actions">
+<div class="buttons are-small is-flex-wrap-nowrap">
   {#if !removed}
     <a
-      class="repo-icon-link icon icon--sm"
+      class="button"
       href="{ gist ? `https://gist.github.com/${gist}` : `https://github.com/${repo}` }"
       target="_blank"
       rel="noopener noreferrer"
-      title={"Open on GitHub"}
+      title="Open on GitHub"
     >
-      <img src={octocatUrl} width="20" height="20" alt="" />
+      <span class="icon">
+        <img src={octocatUrl} width="20" height="20" alt="" />
+      </span>
     </a>
   {:else}
-    <span title="Deleted by author">
-      <span aria-hidden="true">🚫</span>
-    </span>
+    <button type="button" class="button" disabled title="Deleted by author">
+      <span class="icon">
+        <span aria-hidden="true">🚫</span>
+      </span>
+    </button>
   {/if}
   {#if mirrored}
     <a
-      class="repo-icon-link icon icon--sm"
+      class="button"
       href="https://git.feederbox.cc/{repo}"
       target="_blank"
       rel="noopener noreferrer"
       title="Open on mirror"
     >
-      <img src={giteaUrl} width="20" height="20" alt="" />
+      <span class="icon">
+        <img src={giteaUrl} width="20" height="20" alt="" />
+      </span>
     </a>
   {:else}
-    <span title="Not mirrored">
-      <span aria-hidden="true">🤖</span>
-    </span>
+    <button type="button" class="button" disabled title="Not mirrored">
+      <span class="icon">
+        <span aria-hidden="true">🤖</span>
+      </span>
+    </button>
   {/if}
   {#if discourse_id}
     <a
-      class="repo-icon-link icon icon--sm"
+      class="button"
       href={`https://discourse.stashapp.cc/t/${discourse_id}`}
       target="_blank"
       rel="noopener noreferrer"
       title="Open on Discourse"
     >
-      <img src={discourseUrl} width="20" height="20" alt="" />
+      <span class="icon">
+        <img src={discourseUrl} width="20" height="20" alt="" />
+      </span>
     </a>
   {/if}
-</span>
+</div>

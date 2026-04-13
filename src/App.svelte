@@ -3,17 +3,36 @@
   import { loadDatabase, getAllProjects } from "./lib/db.js";
   import type { Project } from "./lib/types.d.ts";
   import { condition_map, type_map } from "./lib/reverse-enum.js";
+  import { filterProjectsByQuery } from "./lib/project-search.js";
   import LastCommitPill from "./components/LastCommitPill.svelte";
   import RepoActions from "./components/RepoActions.svelte";
   import PluginIndexUrlCell from "./components/PluginIndexUrlCell.svelte";
+  import SelectColor from "./components/SelectColor.svelte";
   import "bulma/css/bulma.min.css";
   import "./App.css";
 
-  let projects: Project[] = [];
-  let loading = true;
-  let error: string | null = null;
+  let projects = $state<Project[]>([]);
+  let searchQuery = $state("");
+  let conditionFilter = $state("");
+  let typeFilter = $state("");
+  let loading = $state(true);
+  let error = $state<string | null>(null);
 
-  // const DB_URL = "https://raw.githubusercontent.com/feederbox826/stash-git-index/main/data/projects.sqlite";
+  function facetFilter(list: Project[]): Project[] {
+    const c = conditionFilter === "" ? null : Number(conditionFilter);
+    const t = typeFilter === "" ? null : Number(typeFilter);
+    return list.filter((p) => {
+      if (c !== null && p.condition !== c) return false;
+      if (t !== null && p.type !== t) return false;
+      return true;
+    });
+  }
+
+  let filteredProjects = $derived(
+    filterProjectsByQuery(facetFilter(projects), searchQuery),
+  );
+
+  const DB_URL = "https://raw.githubusercontent.com/feederbox826/stash-git-index/main/data/projects.sqlite";
 
   onMount(async () => {
     try {
@@ -30,10 +49,42 @@
 {#if loading}
   <p>Loading database...</p>
 {:else if error}
-  <p style="color:red">Error: {error}</p>
+  <p class="has-text-danger">Error: {error}</p>
 {:else}
-  <table>
-    <thead>
+  <div class="projects-toolbar field is-grouped is-grouped-multiline mb-4">
+    <p class="control">
+      <SelectColor
+        bind:value={conditionFilter}
+        items={condition_map}
+        allLabel="All conditions"
+      />
+    </p>
+    <p class="control">
+      <SelectColor
+        bind:value={typeFilter}
+        items={type_map}
+        allLabel="All types"
+      />
+    </p>
+    <p class="control is-expanded">
+      <input
+        class="input"
+        type="search"
+        placeholder="Search repo, descriptions..."
+        bind:value={searchQuery}
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </p>
+    <p class="control">
+      <span class="tag is-medium">
+        {filteredProjects.length} / {projects.length}
+      </span>
+    </p>
+  </div>
+
+  <table class="table is-fullwidth is-striped is-hoverable ml-5">
+    <thead class="is-position-sticky">
       <tr>
         <th>repository</th>
         <th>links</th>
@@ -46,14 +97,14 @@
     </thead>
 
     <tbody>
-      {#each projects as p}
+      {#each filteredProjects as p}
         {@const cond = condition_map[p.condition]}
         {@const types = type_map[p.type]}
         <tr>
-          <td class="repo-cell">
+          <td class="repo-cell is-vcentered">
             <span class="is-family-code">{p.repo}</span>
           </td>
-          <td class="repo-actions-cell">
+          <td class="repo-actions-cell is-vcentered is-narrow">
             <RepoActions
               repo={p.repo}
               removed={Boolean(p.removed)}
@@ -62,21 +113,21 @@
               gist={p.gist}
             />
           </td>
-          <td title={cond?.description}>
-            <span class="tag is-rounded" style:background-color={cond.background} style:color={cond.color}>{cond.name}</span>
+          <td class="is-vcentered" title={cond?.description}>
+            <span class="tag" style:background-color={cond.background} style:color={cond.color}>{cond.name}</span>
           </td>
-          <td title={types?.description}>
-            <span class="tag is-rounded" style:background-color={types.background} style:color={types.color}>{types.name}</span>
+          <td class="is-vcentered" title={types?.description}>
+            <span class="tag" style:background-color={types.background} style:color={types.color}>{types.name}</span>
           </td>
-          <td>
+          <td class="is-vcentered">
             {#if p.removed}
               —
             {:else}
               <LastCommitPill repo={p.gist ?? p.repo} />
             {/if}
           </td>
-          <td>{p.description ?? ""}</td>
-          <td><PluginIndexUrlCell url={p.index_url} /></td>
+          <td class="is-vcentered">{p.description ?? ""}</td>
+          <td class="plugin-index-cell is-vcentered"><PluginIndexUrlCell url={p.index_url} /></td>
         </tr>
       {/each}
     </tbody>

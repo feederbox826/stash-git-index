@@ -26,18 +26,33 @@
 </script>
 
 {#if hasUrl}
-  <span>
-    {url}
+  <div class="is-flex is-align-items-center" style="min-width: 0">
     <button
       type="button"
-      class="button is-small"
+      class="button is-small is-flex-shrink-0"
       onclick={copy}
       title="Copy URL"
       aria-label="Copy plugin index URL"
     >
       {copied ? "✅" : "📋"}
     </button>
-  </span>
+    <span
+      class="is-family-code is-size-7 plugin-index-url__text"
+      title={url}
+    >
+      {url}
+    </span>
+    
+  </div>
 {:else}
   —
 {/if}
+
+<style>
+  .plugin-index-url__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.45;
+  }
+</style>
