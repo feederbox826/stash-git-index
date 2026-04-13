@@ -6,15 +6,19 @@
 
   interface Props {
     repo: string;
+    override: string | null;
   }
 
-  let { repo }: Props = $props();
+  let { repo, override }: Props = $props();
 </script>
-
-{#await lookup(repo)}
-  <span>—</span>
-{:then text}
-  <span class="tag {last_commit_condition(text)}">{text || "—"}</span>
-{:catch}
-  —
-{/await}
+{#if override}
+  <span class="tag is-rounded {last_commit_condition(override)}">{override}</span>
+{:else}
+  {#await lookup(repo)}
+    <span>—</span>
+  {:then text}
+    <span class="tag {last_commit_condition(text)}">{text || "—"}</span>
+  {:catch}
+    —
+  {/await}
+{/if}

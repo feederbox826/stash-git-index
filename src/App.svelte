@@ -32,7 +32,10 @@
     filterProjectsByQuery(facetFilter(projects), searchQuery),
   );
 
-  const DB_URL = "https://raw.githubusercontent.com/feederbox826/stash-git-index/main/data/projects.sqlite";
+  const DB_URL_REMOTE = "https://raw.githubusercontent.com/feederbox826/stash-git-index/main/data/projects.sqlite";
+  const DB_URL_LOCAL = `${import.meta.env.BASE_URL}data/projects.sqlite`;
+
+  const DB_URL = import.meta.env.DEV ? DB_URL_LOCAL : DB_URL_REMOTE
 
   onMount(async () => {
     try {
@@ -120,11 +123,7 @@
             <span class="tag" style:background-color={types.background} style:color={types.color}>{types.name}</span>
           </td>
           <td class="is-vcentered">
-            {#if p.removed}
-              —
-            {:else}
-              <LastCommitPill repo={p.gist ?? p.repo} />
-            {/if}
+            <LastCommitPill repo={p.gist ?? p.repo} override={p.last_updated} />
           </td>
           <td class="is-vcentered">{p.description ?? ""}</td>
           <td class="plugin-index-cell is-vcentered"><PluginIndexUrlCell url={p.index_url} /></td>

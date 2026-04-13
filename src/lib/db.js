@@ -14,7 +14,9 @@ export async function loadDatabase(url) {
     locateFile: (file) => (file.endsWith(".wasm") ? sqlWasmUrl : file),
   });
 
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    cache: import.meta.env.DEV ? "no-store" : "default",
+  });
   const buffer = await res.arrayBuffer();
 
   db = new SQL.Database(new Uint8Array(buffer));
@@ -24,7 +26,7 @@ export async function loadDatabase(url) {
 export function getAllProjects() {
   if (!db) throw new Error("DB not loaded");
 
-  const stmt = db.prepare(`SELECT * FROM projects`);
+  const stmt = db.prepare(`SELECT * FROM projects ORDER BY repo`);
   const rows = []
   while (stmt.step()) rows.push(stmt.getAsObject());
   stmt.free();

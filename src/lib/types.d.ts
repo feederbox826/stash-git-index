@@ -38,5 +38,6 @@ export type Project = {
   description: string | null,
   discourse_id: number | null,
   index_url: string | null,
-  gist: string | null
+  gist: string | null,
+  last_updated: string | null
 }
