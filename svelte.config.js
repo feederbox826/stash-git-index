@@ -1,2 +1,5 @@
 /** @type {import("@sveltejs/vite-plugin-svelte").SvelteConfig} */
-export default {}
+import adapter from '@sveltejs/adapter-static'
+export default {
+  adapter: adapter()
+}
