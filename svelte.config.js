@@ -1,5 +1,5 @@
-/** @type {import("@sveltejs/vite-plugin-svelte").SvelteConfig} */
-import adapter from '@sveltejs/adapter-static'
-export default {
-  adapter: adapter()
-}
+/**
+ * Vite + Svelte (not SvelteKit). Use compiler options / preprocess here only.
+ * @type {import("@sveltejs/vite-plugin-svelte").SvelteConfig}
+ */
+export default {};
